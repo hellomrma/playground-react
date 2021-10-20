@@ -1,24 +1,21 @@
-import React, { Component } from 'react';
-import PhoneForm from './components/PhoneForm';
-import PhoneInfoList from './components/PhoneInfoList';
-import './App.css';
+import React, { Component } from "react";
+import PhoneForm from "./component/PhoneForm";
+import PhoneInfoList from "./component/PhoneInfoList";
 
 class App extends Component {
-  
   id = 0;
-
   state = {
     information: [],
-  }
+  };
   handleCreate = (data) => {
     const { information } = this.state;
     this.setState({
       information: information.concat({
         ...data,
-        id: this.id++
-      })
-    })
-  }
+        id: this.id++,
+      }),
+    });
+  };
 
   render() {
     return (
