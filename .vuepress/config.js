@@ -1,13 +1,13 @@
-const sidebar = require('./sidebar');
+// const sidebar = require('./sidebar');
 
 module.exports = {
-  title: 'playground-react',
-  description: 'react 스터디 진행하면서 정리한 내용 입니다.',
+  title: 'React',
+  description: '인프런 React 강의 수강하면서 간단하게 정리한 내용',
   themeConfig: {
-    logo: 'https://avatars1.githubusercontent.com/u/18749057?s=460&v=4', // 로고 이미지
     nav: [
-      { text: 'Home', link: '/' }
+      { text: 'github@hellomrma', link: 'https://github.com/hellomrma' },
+      { text: 'React 공식', link: 'https://ko.reactjs.org/' },
     ],
-    sidebar,
+    sidebar: 'auto'
   }
 }
