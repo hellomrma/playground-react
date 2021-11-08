@@ -1,26 +1,29 @@
 #!/usr/bin/env sh
 
-# 오류 발생시 중단한다.
+# abort on errors
 set -e
 
-# 문서(md)를 build하여 html로 만든다. 
+# build
 yarn docs:build
 
-# build가 output된 폴더로 이동한다. 
+# navigate into the build output directory
 cd .vuepress/dist
 
-# init + add + commit을 해준 다음
-git init
-git add -A
-git commit -m 'deploy'
+# gh-pages clone
+git clone -b gh-pages https://github.com/hellomrma/playground-react/
+cp -rf TIL/.git ./.git
+rm -rf TIL
 
-# https://<USERNAME>.github.io 에 배포하는 경우
-# git push -f https://github.com/<USERNAME>/<USERNAME>.github.io.git master
+# if you are deploying to a custom domain
+# echo 'www.example.com' > CNAME
 
-# https://<USERNAME>.github.io/<REPO> 에 배포하는 경우
-# git push -f https://github.com/<USERNAME>/<REPO>.git master:gh-pages
+git add .
+git commit -m "$*"
 
-# 필자의 경우 TIL repository에 배포하기 때문에 아래와 같이 작성했다.
-git push -f https://github.com/hellomrma/playground-react.git master:gh-pages
+# if you are deploying to https://<USERNAME>.github.io
+# git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
+
+# if you are deploying to https://<USERNAME>.github.io/<REPO>
+git push origin gh-pages
 
 cd -

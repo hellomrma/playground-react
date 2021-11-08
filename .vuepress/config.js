@@ -9,5 +9,6 @@ module.exports = {
       { text: 'React 공식', link: 'https://ko.reactjs.org/' },
     ],
     sidebar: 'auto'
-  }
+  },
+  base: '/playground-react/',
 }
