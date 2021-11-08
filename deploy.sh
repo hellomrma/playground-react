@@ -11,8 +11,8 @@ cd .vuepress/dist
 
 # gh-pages clone
 git clone -b gh-pages https://github.com/hellomrma/playground-react/
-cp -rf TIL/.git ./.git
-rm -rf TIL
+cp -rf playground-react/.git ./.git
+rm -rf playground-react
 
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
