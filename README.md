@@ -15,15 +15,14 @@
 
 ### 섹션 0. 리액트는 무엇인가
 - Virtual DOM 사용 (DOM 변화를 최소화 시켜주는 역할)
-- 생태계가 크다.
-- 많은 곳에서 사용한다.
+- 생태계가 크다. 많은 곳에서 사용한다.
 - JSX 문법
 
 ### 섹션 1. 리액트 프로젝트 시작하기
->리액트에서 사용하는 Webpack, Babel 이란  
->- 여러 컴포넌트 파일을 합치기 위한 Webpack  
->- JSX 문서 해석을 위한 Babel
 - 리액트는 create-react-app(<https://create-react-app.dev/>)을 통하여 시작
+
+>Webpack, Babel 역할  
+>여러 컴포넌트 파일을 합치기 위한 Webpack , JSX 문서 해석을 위한 Babel
 
 ### 섹션 2. 리액트 프로젝트 시작하기
 
