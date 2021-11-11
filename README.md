@@ -1,6 +1,8 @@
 
 **인프런** <https://www.inflearn.com/course/react-velopert/dashboard>
-- 위 인프런 강의를 요약한 내용임
+- 위 인프런 강의를 요약한 내용이며 개인적인 리마인드를 위해 간략하게 정리함
+- 전체 콘텐츠를 확인할려면 다음의 페이지로 이동 <https://react-anyone.vlpt.us>
+- 추가로 도움되는 페이지 <https://react.vlpt.us>
 
 # 누구든지 하는 리액트: 초심자를 위한 react 핵심 강좌
 - 섹션 0. 리액트는 무엇인가
@@ -309,15 +311,346 @@ const MyName = ({ name }) => {
 export default MyName;
 ```
 
-## 섹션 4. LifeCycle API
+### state 사용법
+- 동적인 데이터 다룰 때 사용
+- 메소드는 화살표 함수로 작성해야함
+```javascript
+import React, { Component } from 'react';
 
-## 섹션 5. 리액트 작업환경 직접 설정하기
+class Counter extends Component {
+  state = {
+    number: 0
+  }
+  // Method
+  handleIncrease = () => {
+    // setState
+    this.setState({
+      number: this.state.number + 1
+    });
+  }
+
+  handleDecrease = () => {
+    this.setState({
+      number: this.state.number - 1
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>카운터</h1>
+        <div>값: {this.state.number}</div>
+        <button onClick={this.handleIncrease}>+</button>
+        <button onClick={this.handleDecrease}>-</button>
+      </div>
+    );
+  }
+}
+
+export default Counter;
+```
+
+**setState**
+- state에 있는 값 변경을 위함
+- 객체로 전달되는 값만 업데이트 해줌
+- 아래와 같이 depth가 높은 단계일 경우에는 확인을 못함
+```javascript
+state = {
+  number: 0,
+  foo: {
+    bar: 0,
+    foobar: 1
+  }
+}
+```
+- 위와 같은 상황일때는 아래와 같이 전개연산자(...) 사용해서 처리 (더 편하게 쓸려면 immutable.js / immer.js)
+```javascript
+this.setState({
+  number: 0,
+  foo: {
+    ...this.state.foo,
+    foobar: 2
+  }
+});
+```
+
+**setState에 객체 대신 함수 전달**
+- 기본
+```javascript
+this.setState({
+  number: this.state.number + 1
+});
+```
+- 다른방법1
+```javascript
+this.setState(
+  (state) => ({
+    number: state.number
+  })
+);
+```
+- 다른방법2 (비구조화 할당 / 구조 분해 할당)
+```javascript
+this.setState(
+  ({ number }) => ({
+    number: number + 1
+  })
+);
+```
+- 위 함수를 다음과 같이 처리 가능함
+```javascript
+handleIncrease = () => {
+  const { number } = this.state;
+  this.setState({
+    number: number + 1
+  });
+}
+
+handleDecrease = () => {
+  this.setState(
+    ({ number }) => ({
+      number: number - 1
+    })
+  );
+}
+```
+### 이벤트 설정
+- 이벤트 이름은 camelCase
+- 이벤트에 전달해주는 값은 함수여야 함. onClick={this.handleIncrease()} 이렇게 호출하면 안됨.
+```javascript
+render() {
+  return (
+    <div>
+      <h1>카운터</h1>
+      <div>값: {this.state.number}</div>
+      <button onClick={this.handleIncrease}>+</button>
+      <button onClick={this.handleDecrease}>-</button>
+    </div>
+  );
+}
+```
+## 섹션 4. LifeCycle API
+컴포넌트의 브라우저에서 나타날 때, 사라질 때, 업데이트 될 때 호출되는 API
+
+**constructor - 새롭게 만들어 질때**
+```javascript
+constructor(props) {
+  super(props);
+}
+```
+**componentWillMount - 화면에 나가기 직전에 호출됨 (16.3 이후 사용안됨)**
+```javascript
+componentWillMount() {
+
+}
+```
+**componentDidMount - 화면에 나ㅏ나게 되었을때 호출됨. 외부 라이브러리 연동, axios,fetch 등 데이터 요청시 사용**
+```javascript
+componentDidMount() {
+  // 외부 라이브러리 연동: D3, masonry, etc
+  // 컴포넌트에서 필요한 데이터 요청: Ajax, GraphQL, etc
+  // DOM 에 관련된 작업: 스크롤 설정, 크기 읽어오기 등
+}
+```
+**componentWillReceiveProps - 컴포넌트가 새로운 props를 받게됐을 때 (16.3 이후 사용안됨)**
+```javascript
+componentWillReceiveProps(nextProps) {
+  // this.props 는 아직 바뀌지 않은 상태
+}
+```
+**static getDerivedStateFromProps() - props로 받아온 값을 state로 동기화하는 작업을 할 경우**
+```javascript
+static getDerivedStateFromProps(nextProps, prevState) {
+  // 여기서는 setState 를 하는 것이 아니라
+  // 특정 props 가 바뀔 때 설정하고 설정하고 싶은 state 값을 리턴하는 형태로
+  // 사용됩니다.
+  /*
+  if (nextProps.value !== prevState.value) {
+    return { value: nextProps.value };
+  }
+  return null; // null 을 리턴하면 따로 업데이트 할 것은 없다라는 의미
+  */
+}
+```
+**shouldComponentUpdate - 컴포넌트 최적화용. 쓸대없이 낭비되는 CPU 처리량을 줄이기 위해 Virtual DOM에 리렌더링하는것도 불필요할 경우 방지하기 위함**
+```javascript
+shouldComponentUpdate(nextProps, nextState) {
+  // return false 하면 업데이트를 안함
+  // return this.props.checked !== nextProps.checked
+  return true;
+}
+```
+... 이외 다양한 LifeCycle API는 [LifeCycle API](https://react-anyone.vlpt.us/05.html)에서 확인
 
 ## 섹션 6. 인풋 상태 관리
+[예제 프로젝트 전체 코드 github](https://github.com/vlpt-playground/phone-book)
 
+아래의 몇가지 코드를 통하여 중요하다고 판단되는 내용들을 간략하게 정리함.
+```javascript
+// file: src/components/PhoneForm.js
+import React, { Component } from 'react';
+
+class PhoneForm extends Component {
+  state = {
+    name: ''
+  }
+  handleChange = (e) => {
+    this.setState({
+      name: e.target.value
+    })
+  }
+  render() {
+    return (
+      <form>
+        <input
+          placeholder="이름"
+          value={this.state.name}
+          onChange={this.handleChange}
+        />
+        <div>{this.state.name}</div>
+      </form>
+    );
+  }
+}
+
+export default PhoneForm;
+```
+- onChange 텍스트 값이 바뀔때 마다 발생. handleChange 설정됨.
+- 아래 코드와 같이 컴포넌트 불러옴
+```javascript
+// file: src/App.js
+import React, { Component } from 'react';
+import PhoneForm from './components/PhoneForm';
+
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <PhoneForm />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+- 여러 값을 받아와야 할 경우 다음과 같이 작성
+```javascript
+// file: src/components/PhoneForm.js
+import React, { Component } from 'react';
+
+class PhoneForm extends Component {
+  state = {
+    name: '',
+    phone: ''
+  }
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+  render() {
+    return (
+      <form>
+        <input
+          placeholder="이름"
+          value={this.state.name}
+          onChange={this.handleChange}
+          name="name"
+        />
+        <input
+          placeholder="전화번호"
+          value={this.state.phone}
+          onChange={this.handleChange}
+          name="phone"
+        />
+        <div>{this.state.name} {this.state.phone}</div>
+      </form>
+    );
+  }
+}
+
+export default PhoneForm;
+```
+### 부모 컴포넌트에게 정보 전달하기
+- app.js에서 handleCreate 만듬
+- phoneform.js에서 submit 하였을때 부모에게 값을 전달
+- preventDefault는 submit 기본 기능 막아줌
+```javascript
+// file: src/App.js
+import React, { Component } from 'react';
+import PhoneForm from './components/PhoneForm';
+
+class App extends Component {
+  handleCreate = (data) => {
+    console.log(data);
+  }
+  render() {
+    return (
+      <div>
+        <PhoneForm
+          onCreate={this.handleCreate}
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+```javascript
+// file: src/components/PhoneForm.js
+import React, { Component } from 'react';
+
+class PhoneForm extends Component {
+  state = {
+    name: '',
+    phone: ''
+  }
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+  handleSubmit = (e) => {
+    // 페이지 리로딩 방지
+    e.preventDefault();
+    // 상태값을 onCreate 를 통하여 부모에게 전달
+    this.props.onCreate(this.state);
+    // 상태 초기화
+    this.setState({
+      name: '',
+      phone: ''
+    })
+  }
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input
+          placeholder="이름"
+          value={this.state.name}
+          onChange={this.handleChange}
+          name="name"
+        />
+        <input
+          placeholder="전화번호"
+          value={this.state.phone}
+          onChange={this.handleChange}
+          name="phone"
+        />
+        <button type="submit">등록</button>
+      </form>
+    );
+  }
+}
+
+export default PhoneForm;
+```
 ## 섹션 7. 배열 데이터 렌더링 및 관리
-## 섹션 8. 최적화, 활용, Ref
 
-### 관련 자료
-- <https://react-anyone.vlpt.us>
-- <https://react.vlpt.us>
+### 배열 생성과 렌더링
+
+### 제거와 수정
+
+## 섹션 8. 최적화, 활용, Ref
