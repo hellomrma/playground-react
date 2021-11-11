@@ -648,9 +648,127 @@ class PhoneForm extends Component {
 export default PhoneForm;
 ```
 ## 섹션 7. 배열 데이터 렌더링 및 관리
-
 ### 배열 생성과 렌더링
+- 평소와 같이 배열 추가시 push를 사용하면 안됨
+- state 내부의 값을 직접 수정하면 안됨 (불변성 유지)
+- push, splice, unshift, pop 사용하지 말고 concat, slice, map, filter 사용해야 함
 
+**추가**
+```javascript
+// file: src/App.js
+import React, { Component } from 'react';
+import PhoneForm from './components/PhoneForm';
+
+class App extends Component {
+  id = 2
+  state = {
+    information: [
+      {
+        id: 0,
+        name: '김민준',
+        phone: '010-0000-0000'
+      },
+      {
+        id: 1,
+        name: '홍길동',
+        phone: '010-0000-0001'
+      }
+    ]
+  }
+  handleCreate = (data) => {
+    const { information } = this.state;
+    this.setState({
+      information: information.concat({ id: this.id++, ...data })
+    })
+  }
+  render() {
+    const { information } = this.state;
+    return (
+      <div>
+        <PhoneForm
+          onCreate={this.handleCreate}
+        />
+        {JSON.stringify(information)}
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+**렌더링**
+- 렌더링을 하기 위해선 map 함수를 알아야 함
+```javascript
+const a = [1,2,3,4,5];
+const b = a.map(number => number * 2);
+```
+
+**컴포넌트1 - 정보를 보여주는 역할**
+```javascript
+// file: src/components/PhoneInfo.js
+import React, { Component } from 'react';
+
+class PhoneInfo extends Component {
+  static defaultProps = {
+    info: {
+      name: '이름',
+      phone: '010-0000-0000',
+      id: 0
+    }
+  }
+
+  render() {
+    const style = {
+      border: '1px solid black',
+      padding: '8px',
+      margin: '8px'
+    };
+
+    const {
+      name, phone, id
+    } = this.props.info;
+
+    return (
+      <div style={style}>
+        <div><b>{name}</b></div>
+        <div>{phone}</div>
+      </div>
+    );
+  }
+}
+
+export default PhoneInfo;
+```
+**컴포넌트2 - 위 정보들을 리스팅하는 역할**
+- 아래 코드의 포인트는 key 속성
+- key는 배열을 렌더링할때 필요한 것
+- key를 설정하지 않으면 자동으로 설정되지만 하나만 수정하더라도 다른 값도 re렌더링이 되어버림
+```javascript
+// src/components/PhoneInfoList.js
+import React, { Component } from 'react';
+import PhoneInfo from './PhoneInfo';
+
+class PhoneInfoList extends Component {
+  static defaultProps = {
+    data: []
+  }
+
+  render() {
+    const { data } = this.props;
+    const list = data.map(
+      info => (<PhoneInfo key={info.id} info={info}/>)
+    );
+
+    return (
+      <div>
+        {list}    
+      </div>
+    );
+  }
+}
+
+export default PhoneInfoList;
+```
 ### 제거와 수정
 
 ## 섹션 8. 최적화, 활용, Ref
