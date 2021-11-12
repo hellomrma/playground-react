@@ -770,5 +770,137 @@ class PhoneInfoList extends Component {
 export default PhoneInfoList;
 ```
 ### 제거와 수정
+**데이터 제거 - filter를 사용해서 데이터를 걸러냄**
+```javascript
+const arr = [1, 2, 3, 4, 5];
+
+// 배열에서 3을 제거 할려면 다음과 같이 처리
+array.slice(0,2).concat(array.slice(3,5)) // [1, 2, 4, 5]
+// or
+[ ...array.slice(0,2), ...array.slice(3,5) ];
+// or filter 사용 (새로운 배열을 만들어 줌)
+array.filter(num => num !== 3); // [1, 2, 4, 5]
+```
+- handleRemove를 생성하고 삭제 버튼 생성, 리스트에 노출
+- 자세한 코드는 다음 페이지에서 확인 [https://react-anyone.vlpt.us/08.html](https://react-anyone.vlpt.us/08.html)
+```javascript
+// file: src/App.js
+...
+  handleRemove = (id) => {
+    const { information } = this.state;
+    this.setState({
+      information: information.filter(info => info.id !== id)
+    })
+  }
+  render() {
+    const { information } = this.state;
+    return (
+      <div>
+        <PhoneForm
+          onCreate={this.handleCreate}
+        />
+        <PhoneInfoList 
+          data={information}
+          onRemove={this.handleRemove}
+        />
+      </div>
+    );
+  }
+}
+```
+```javascript
+// file: src/components/PhoneInfoList.js
+class PhoneInfoList extends Component {
+  static defaultProps = {
+    list: [],
+    onRemove: () => console.warn('onRemove not defined'),
+  }
+
+  render() {
+    const { data, onRemove } = this.props;
+    const list = data.map(
+      info => (
+        <PhoneInfo
+          key={info.id}
+          info={info}
+          onRemove={onRemove}
+        />)
+    );
+
+    return (
+      <div>
+        {list}    
+      </div>
+    );
+  }
+}
+```
+```javascript
+class PhoneInfo extends Component {
+  handleRemove = () => {
+    // 삭제 버튼이 클릭되면 onRemove 에 id 넣어서 호출
+    const { info, onRemove } = this.props;
+    onRemove(info.id);
+  }
+
+  render() {
+...
+
+    return (
+      <div style={style}>
+        <div><b>{name}</b></div>
+        <div>{phone}</div>
+        <button onClick={this.handleRemove}>삭제</button>
+      </div>
+    );
+  }
+}
+
+export default PhoneInfo;
+```
+**데이터 수정**
+- 수정시에도 기존 배열과 내부 객체를 직접적으로 수정하지 않음
+```javascript
+const array = [
+  { id: 0, text: 'hello', tag: 'a' },
+  { id: 1, text: 'world' , tag: 'b' },
+  { id: 2, text: 'bye', tag: 'c' }
+];
+const modifiedArray = array.map(item => item.id === 1
+  ? ({ ...item,. text: 'Korea' }) // id 가 일치하면 새 객체를 만들고, 기존의 내용을 집어넣고 원하는 값 덮어쓰기
+  : item // 바꿀 필요 없는것들은 그냥 기존 값 사용
+```
+
+- handleUpdate 함수를 만들어서 내용을 업데이트 함
+- 자세한 참고 코드는 [https://react-anyone.vlpt.us/08.html](https://react-anyone.vlpt.us/08.html)
 
 ## 섹션 8. 최적화, 활용, Ref
+### 데이터 필터링 & 불변성
+[https://react-anyone.vlpt.us/09.html](https://react-anyone.vlpt.us/09.html)
+
+## 요약
+1. 재사용 가능한 컴포넌트를 만듭니다.
+2. props 는 부모에게서 전달받는 값입니다.
+3. state 는 자기 자신이 지니고 있는 데이터입니다.
+4. props 나 state 가 바뀌면 컴포넌트는 리렌더링 합니다.
+5. LifeCycle API 를 통해서 컴포넌트 마운트, 업데이트, 언마운트 전후로 처리 할 로직을 설정하거나 리렌더링을 막아줄수도 있습니다.
+
+### 스타일링
+- [https://velog.io/@velopert/react-component-styling](https://velog.io/@velopert/react-component-styling)
+
+### 상태관리
+- Redux, MobX
+
+### 불변성 유지
+- [https://immutable-js.com/](https://immutable-js.com/)
+- [https://github.com/immerjs/immer](https://github.com/immerjs/immer)
+
+### 라우팅
+- [https://github.com/remix-run/react-router](https://github.com/remix-run/react-router)
+- [https://github.com/vercel/next.js](https://github.com/vercel/next.js)
+
+### 테스팅
+- [https://velopert.com/3587](https://velopert.com/3587)
+
+### 타입
+- [https://velopert.com/3595](https://velopert.com/3595)
